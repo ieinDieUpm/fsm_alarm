@@ -18,6 +18,7 @@
 // HW Nucleo-STM32F446RE:
 #define LED_HOME_ALARM_GPIO GPIOA /*!< GPIO port of the LED2 in the Nucleo board */
 #define LED_HOME_ALARM_PIN 5      /*!< GPIO pin of the LED2 in the Nucleo board */
+#define LED_HOME_ALARM_TIMER TIM2 /*!< Timer to control the blinking of the LED2 in the Nucleo board */
 
 /* Typedefs --------------------------------------------------------------------*/
 /**
@@ -27,6 +28,7 @@ typedef struct
 {
     GPIO_TypeDef *p_port; /*!< GPIO where the LED is connected */
     uint8_t pin;          /*!< Pin/line where the LED is connected */
+    TIM_TypeDef *p_timer; /*!< Timer to control the blinking of the LED */
 } port_led_hw_t;
 
 /* Global variables -----------------------------------------------------------*/
@@ -83,6 +85,5 @@ void port_led_timer_activate(port_led_hw_t *p_led);
  *
  */
 void port_led_timer_deactivate(port_led_hw_t *p_led);
-
 
 #endif // PORT_LED_H_
