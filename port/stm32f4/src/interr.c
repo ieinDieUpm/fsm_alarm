@@ -73,6 +73,13 @@ void EXTI15_10_IRQHandler(void)
   }
 }
 
+/**
+ * @brief Interrupt service routine for the TIM2 timer.
+ *
+ * @note This ISR is called when the TIM2 timer generates an interrupt.
+ * The program flow jumps to this ISR and toggles the LED.
+ *
+ */
 void TIM2_IRQHandler(void)
 {
   port_led_toggle(&led_home_alarm);

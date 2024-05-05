@@ -30,7 +30,7 @@ typedef struct
 } port_led_hw_t;
 
 /* Global variables -----------------------------------------------------------*/
-extern port_led_hw_t led_home_alarm;
+extern port_led_hw_t led_home_alarm; /*!< LED of the alarm system. Public for access to interrupt handlers. */
 
 /* Function prototypes and explanations ---------------------------------------*/
 /**

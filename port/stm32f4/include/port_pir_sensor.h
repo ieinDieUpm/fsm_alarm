@@ -35,7 +35,7 @@ typedef struct
 } port_pir_hw_t;
 
 /* Global variables -----------------------------------------------------------*/
-extern port_pir_hw_t pir_sensor_home_alarm;
+extern port_pir_hw_t pir_sensor_home_alarm; /*!< PIR sensor of the alarm system. Public for access to interrupt handlers. */
 
 /**
  * @brief Gets the status of the PIR sensor.

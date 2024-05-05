@@ -52,4 +52,12 @@ void port_button_init(port_button_hw_t *p_button);
  */
 bool port_button_read_gpio(port_button_hw_t *p_button);
 
+/**
+ * @brief Gets the status of the button. The button is considered pressed when it has been both pressed and released.
+ *
+ * @param p_button Pointer to the button structure.
+ * @return true if the button is pressed, false otherwise.
+ */
+bool port_button_is_pressed(port_button_hw_t *p_button);
+
 #endif /* PORT_BUTTON_H */

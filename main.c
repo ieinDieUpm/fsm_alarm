@@ -12,6 +12,13 @@
 #include "port_system.h"
 #include "fsm_alarm.h"
 
+/* MAIN FUNCTION */
+
+/**
+ * @brief Main function
+ * 
+ * @return int 
+ */
 int main()
 {
     // Local variables

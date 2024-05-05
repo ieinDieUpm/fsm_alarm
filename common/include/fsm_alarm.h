@@ -32,6 +32,9 @@ enum FSM_ALARM_STATES
 };
 
 /* Typedefs ------------------------------------------------------------------*/
+/**
+ * @brief Structure to define the alarm system FSM.
+ */
 typedef struct
 {
     fsm_t f;                     /*!< FSM structure. Important to be the first element of the structure */

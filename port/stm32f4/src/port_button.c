@@ -30,7 +30,7 @@ void port_button_init(port_button_hw_t *p_button)
 
 bool port_button_is_pressed(port_button_hw_t *p_button)
 {
-    return p_button->flag_pressed;
+    return p_button->flag_released && !p_button->flag_pressed;
 }
 
 bool port_button_read_gpio(port_button_hw_t *p_button)
