@@ -10,37 +10,46 @@
 #ifndef PORT_BUTTON_H
 #define PORT_BUTTON_H
 
+/* Includes ------------------------------------------------------------------*/
+/* Standard C includes */
 #include <stdbool.h>
 
+/* HW dependent includes */
+#include "port_system.h"
+
+/* Defines --------------------------------------------------------------------*/
 // HW Nucleo-STM32F446RE:
-#define BUTTON_PIN 13          /*!< GPIO pin of the button in the Nucleo board */
-#define BUTTON_GPIO_PORT GPIOC /*!< GPIO port of the button in the Nucleo board */
+#define BUTTON_HOME_ALARM_GPIO GPIOC /*!< GPIO port of the button in the Nucleo board */
+#define BUTTON_HOME_ALARM_PIN  13    /*!< GPIO pin of the button in the Nucleo board */
 
-#define MODER_BUTTON_MASK (GPIO_MODER_MODE0 << BUTTON_PIN * 2) /*!< Mask for the button in the MODE Register */
-#define PUPDR_BUTTON_MASK (GPIO_PUPDR_PUPD0 << BUTTON_PIN * 2) /*!< Mask for the button in the PUPD Register */
+/* Typedefs --------------------------------------------------------------------*/
+/**
+ * @brief Structure to define the HW dependencies of a button.
+ */
+typedef struct
+{
+    GPIO_TypeDef *p_port; /*!< GPIO where the button is connected */
+    uint8_t pin;          /*!< Pin/line where the button is connected */
+    bool flag_pressed;    /*!< Flag to indicate that the button has been pressed */
+    bool flag_released;   /*!< Flag to indicate that the button has been released */
+} port_button_hw_t;
 
-#define MODER_BUTTON_AS_INPUT (GPIO_MODE_IN << BUTTON_PIN * 2)       /*!< Output mode for the button in the MODE Register */
-#define PUPDR_BUTTON_AS_NOPUPD (GPIO_PUPDR_NOPULL << BUTTON_PIN * 2) /*!< No push/pull configuration for the button in the MODE Register */
-
-#define IDR_BUTTON_MASK (GPIO_IDR_ID0 << BUTTON_PIN) /*!< Mask for the button in the Input Data Register */
+/* Global variables -----------------------------------------------------------*/
+extern port_button_hw_t button_home_alarm; /*!< Button of the alarm system. Public for access to interrupt handlers. */
 
 /**
- * @brief Initializes the GPIO of the button.
+ * @brief Initializes the button.
  *
+ * @param p_button Pointer to the button structure.
  */
-void port_button_gpio_setup(void);
+void port_button_init(port_button_hw_t *p_button);
 
 /**
  * @brief Gets the status of the button.
  *
+ * @param p_button Pointer to the button structure.
  * @return true if the button is pressed, false otherwise.
  */
-bool port_button_get_status(void);
-
-/**
- * @brief Configures the EXTI for the button.
- *
- */
-void port_button_exti_config(void);
+bool port_button_read_gpio(port_button_hw_t *p_button);
 
 #endif /* PORT_BUTTON_H */

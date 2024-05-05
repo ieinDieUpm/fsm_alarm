@@ -1,7 +1,7 @@
 /**
  * @file port_button.c
  * @author Josué Pagán (j.pagan@upm.es)
- * @brief Port layer for the button of the STM32F4 Nucleo board.
+ * @brief Port layer for the p_button of the STM32F4 Nucleo board.
  * @version 0.1
  * @date 2024-04-01
  *
@@ -15,41 +15,25 @@
 #include "port_system.h"
 #include "port_button.h"
 
+/* Global variables -----------------------------------------------------------*/
+port_button_hw_t button_home_alarm = {.p_port = BUTTON_HOME_ALARM_GPIO, .pin = BUTTON_HOME_ALARM_PIN, .flag_pressed = false, .flag_released = false};
+
 /* Function definitions ------------------------------------------------------*/
-void port_button_exti_config()
+void port_button_init(port_button_hw_t *p_button)
 {
-    /* Enable SYSCFG clock */
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-    
-    SYSCFG->EXTICR[3] &= ~(0xFUL << 1 * 4);
-    SYSCFG->EXTICR[3] |= (0x02 << 1 * 4);
+    // Initialize the GPIO
+    port_system_gpio_config(p_button->p_port, p_button->pin, GPIO_MODE_IN, GPIO_PUPDR_NOPULL);
+    port_system_gpio_config_exti(p_button->p_port, p_button->pin, TRIGGER_BOTH_EDGE | TRIGGER_ENABLE_INTERR_REQ); /* EXTI both edges */
 
-    /* Rising trigger selection register (EXTI_RTSR) */
-    EXTI->RTSR &= ~(EXTI_RTSR_TR0 << BUTTON_PIN);
-    EXTI->RTSR |= (EXTI_RTSR_TR0 << BUTTON_PIN);
-
-    /* Falling trigger selection register (EXTI_FTSR) */
-    EXTI->FTSR &= ~(EXTI_FTSR_TR0 << BUTTON_PIN);
-    EXTI->FTSR |= (EXTI_FTSR_TR0 << BUTTON_PIN);
-
-    /* Interrupt mask register (EXTI_IMR) */
-    EXTI->IMR &= ~(EXTI_IMR_MR0 << BUTTON_PIN);
-    EXTI->IMR |= (EXTI_IMR_MR0 << BUTTON_PIN);
-
-    NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 1, 0));
-    NVIC_EnableIRQ(EXTI15_10_IRQn);
+    port_system_gpio_exti_enable(p_button->pin, 3, 0);
 }
 
-void port_button_gpio_setup(void)
+bool port_button_is_pressed(port_button_hw_t *p_button)
 {
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;           // Enable peripheral clock
-    BUTTON_GPIO_PORT->MODER &= ~MODER_BUTTON_MASK; // Clean the registers
-    BUTTON_GPIO_PORT->PUPDR &= ~PUPDR_BUTTON_MASK;
-    BUTTON_GPIO_PORT->MODER |= MODER_BUTTON_AS_INPUT; // Set the corresponding configuration
-    BUTTON_GPIO_PORT->PUPDR |= PUPDR_BUTTON_AS_NOPUPD;
+    return p_button->flag_pressed;
 }
 
-bool port_button_get_status(void)
-{
-    return (BUTTON_GPIO_PORT->IDR & IDR_BUTTON_MASK) != 0;
+bool port_button_read_gpio(port_button_hw_t *p_button)
+{    
+    return (p_button->p_port->IDR & BIT_POS_TO_MASK(p_button->pin)) != 0;
 }

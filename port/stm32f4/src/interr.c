@@ -9,13 +9,7 @@
 #include "port_system.h"
 #include "port_button.h"
 #include "port_led.h"
-
-/* Defines and enums ----------------------------------------------------------*/
-#define BUTTON_EXTI_PR_MASK (EXTI_PR_PR0 << BUTTON_PIN) /*!< Mask for the button in the Pending Register */
-
-/* Global variables -----------------------------------------------------------*/
-volatile bool button_pressed = false; /*!< Flag to indicate if the button is pressed */
-volatile uint32_t c = 0;              /*!< Counter for the button press */
+#include "port_pir_sensor.h"
 
 //------------------------------------------------------
 // INTERRUPT SERVICE ROUTINES
@@ -43,36 +37,45 @@ void SysTick_Handler(void)
  */
 void EXTI15_10_IRQHandler(void)
 {
-  static bool isr_falling = false;
-
-  if (EXTI->PR & BUTTON_EXTI_PR_MASK)
+  // Button
+  if (EXTI->PR & BIT_POS_TO_MASK(button_home_alarm.pin))
   {
-    if (!port_button_get_status()) // If the button is pressed
+    if (port_button_read_gpio(&button_home_alarm)) // If the button is released (not pressed)
     {
-      isr_falling = true;
-    }
-    else // If the button is released
-    {
-      if (isr_falling) // If the button was pressed before
+      if (button_home_alarm.flag_pressed) // If the button was pressed before
       {
-        isr_falling = false;   // Reset the flag
-        button_pressed = true; // Set the flag
-        c++;                   // Increment the counter
-        port_led_timer_delay_ms(500 / c);
+        button_home_alarm.flag_released = true; // Set the flag
+        button_home_alarm.flag_pressed = false; // Reset the flag
       }
     }
+    else // If the button is pressed
+    {
+      button_home_alarm.flag_released = false; // Reset the flag
+      button_home_alarm.flag_pressed = true;   // Set the flag
+    }
 
-    EXTI->PR |= BUTTON_EXTI_PR_MASK; // Para limpiar el flag que se encuentre a ‘1’ hay que escribir un ‘1’ en dicho bit. Escribir ‘0’ no afecta al estado del bit
+    EXTI->PR |= BIT_POS_TO_MASK(button_home_alarm.pin); // Para limpiar el flag que se encuentre a ‘1’ hay que escribir un ‘1’ en dicho bit. Escribir ‘0’ no afecta al estado del bit
+  }
+
+  // PIR sensor
+  if (EXTI->PR & BIT_POS_TO_MASK(pir_sensor_home_alarm.pin))
+  {
+    if (port_pir_sensor_read_gpio(&pir_sensor_home_alarm))
+    {
+      pir_sensor_home_alarm.sensor_status = true;
+    }
+    else
+    {
+      pir_sensor_home_alarm.sensor_status = false;
+    }
+
+    EXTI->PR |= BIT_POS_TO_MASK(pir_sensor_home_alarm.pin);
   }
 }
 
 void TIM2_IRQHandler(void)
 {
+  port_led_toggle(&led_home_alarm);
+  
   TIM2->SR &= ~TIM_SR_UIF; // Clear the update interrupt flag
-
-  if (c > 0)
-  {
-    port_led_toggle();
-    button_pressed = false; // Reset the flag
-  }
 }

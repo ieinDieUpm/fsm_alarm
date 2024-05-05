@@ -1,61 +1,61 @@
-# Blink LED with Button and Timer Interruption
+# Alarm system
 
-This project makes the LED LD2 of the Nucleo-STM32F446RE at a frequency of `1/c` Hz. The frequency is controlled by the push of the user button B1. Each time the button is pushed, the frequency is divided by 2 (`c` increases by 1). The LED is off when `c` equals 0. The button is managed by an interrupt service routine (ISR). The time blink is managed by timer interruption.
+This project implements an alarm system with a PIR, a button and a LED. The system uses an FSM to manage the different states of the system and hardware. This picture shows the FSM of the system:
 
-The system uses the TIM2 interrupt to detect the end of the note. The interrupt is configured with the following settings:
+![FSM Alarm](docs/assets/imgs/fsm_alarm.png)
 
-| Parameter   | Value           |
-| ----------- | --------------- |
-| Interrupt   | TIM2_IRQHandler |
-| Priority    | 1               |
-| Subpriority | 0               |
+You can generate as many alarm system as you want by creating a new FSM and assigning the corresponding peripherals to the system. The system which is implemented in the `main.c` file. The system uses the following peripherals:
 
-## Ejercicio: parpadeo con interrupción del TIM2
+## PIR sensor
 
-**Cree el proyecto** `blink_led_interr_button_interr`. **Se trata de una modificación del programa** `blink_led_button_interr` **donde la acción de esperar no se toma al leer mediante polling el valor del** `SysTick`, **sino mediante una interrupción del *timer* 2** (`TIM2`).
+The PIR sensor is connected to the pin `PA10`. The sensor is configured as an input with no push-pull resistor. The sensor generates an interrupt when it detects movement. The interrupt is configured with the following settings:
 
-1. **Crear la función** `port_led_timer_setup()` **que inicializa el *timer* 2** (`TIM2`) **y hacerla pública.**
+| Parameter     | Value                    |
+| ------------- | ------------------------ |
+| Variable name | pir_sensor_home_alarm    |
+| Pin           | PA10 (D2 on Nucleo)      |
+| Mode          | Input                    |
+| Pull up/ down | No push no pull          |
+| Edge          | Both: Rising and Falling |
+| EXTI          | EXTI10                   |
+| ISR           | EXTI15_10_IRQHandler()   |
+| Priority      | 1                        |
+| Subpriority   | 0                        |
 
-- Habilitar la **fuente de reloj** del *timer* 2: `RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN`.
-- **Deshabilitar** el *timer* 2 limpiando el bit `CEN` del registro `CR1`.
-- Poner el contador `CNT`, el *prescaler* `PSC` y el periodo `ARR` a 0.
-- **Limpiar las interrupciones** pendientes en el bit `UIF` del registro `SR`.
-- **Habilitar la interrupción** del *timer* 2: `TIM2->DIER |= TIM_DIER_UIE`.
-- Configurar la **prioridad** de la interrupción del *timer* 2 a 2 y la subprioridad a 0 en el *NVIC*: 
-  
-  `NVIC_SetPriority(TIM2_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 2, 0))`.
-- Habilitar la **interrupción global del periférico** en el *NVIC*: `NVIC_EnableIRQ(TIM2_IRQn)`.
+## Button
 
-2 . **Crear la función** `port_led_timer_delay_ms(uint32_t delay_ms)` **que implementa la espera mediante la interrupción periódica del *timer* 2 al valor** `delay_ms`, **y hacerla pública.**
+The button is connected to the pin `PC13`. The button is configured as an input with no push-pull resistor. The button generates an interrupt when it is both pressed and released. The interrupt is configured with the following settings:
 
-- **Deshabilitar** el *timer* 2 limpiando el bit `CEN` del registro `CR1` para no tener interrupciones mientras se configura.
-- Poner el contador `CNT` a 0.
-- **Calcular el valor del periodo** `ARR` **en función del** *prescaler* `PSC`.
-  
-  - La ecuación del periodo de interrupción del *timer* es `T_interr = f_clk / ((PSC + 1) * (ARR + 1))`.
-  - La frecuencia del reloj del sistema es 16 MHz y está definida en la variable `SystemCoreClock`.
-  - **Comprobar** que el valor del periodo `ARR` ni el *prescaler* `PSC` superan el valor máximo de 16 bits (65535).
-  - Tener en cuenta que el valor de interrupción recibido es en milisegundos y hay que **convertirlo a segundos**.
-  - **Trabajar con precisión doble en todas las variables y constantes.** *castear* los valores de la frecuencia del reloj del sistema y del periodo de interrupción a `double`. *e.g.*:
-    - `double f_clk = (double)SystemCoreClock`
-    - `double T_interr = (double)delay_ms / 1000.0`
-    - `1.0` en lugar de `1` para que el resultado sea `double`.
-  - **Forzar la actualización de registros** activando el bit `UG`: `TIM2->EGR |= TIM_EGR_UG`.
-  - **Habilitar el *timer* 2** limpiando el bit `CEN` del registro `CR1`
-  
-3 . **En el fichero** `interr.c`, **implementar la función** `TIM2_IRQHandler()` **que se ejecuta cuando se produce la interrupción del *timer* 2.**
+| Parameter     | Value                    |
+| ------------- | ------------------------ |
+| Variable name | button_home_alarm        |
+| Pin           | PC13 (B1 on Nucleo)      |
+| Mode          | Input                    |
+| Pull up/ down | No push no pull          |
+| Edge          | Both: Rising and Falling |
+| EXTI          | EXTI13                   |
+| ISR           | EXTI15_10_IRQHandler()   |
+| Priority      | 3                        |
+| Subpriority   | 0                        |
 
-  - Cuando se produce la interrupción, **limpiar el bit** `UIF` del registro `SR`.
-  - Llamar a la función `port_led_toggle()` para cambiar el estado del LED si el contador de pulsaciones `c` es distinto de 0.
-  - Gestionar el indicador de botón pulsado `button_pressed` adecuadamente.
-  
-   - **En la ISR del botón, llamar a la función** `port_led_timer_delay_ms()` con el valor adecuado para el parpadeo del LED.
+## LED
 
-4 . **En** `main.c`:
+The LED is connected to the pin `PA5`. The LED is configured as an output with no push-pull resistor. The LED is used to indicate the state of the system. The LED is configured with the following settings:
 
-  - **Quitar** del `main()` la gestión del parpadeo del LED.
-  - Como las variables `c` y `button_pressed` se gestionan en las ISRs, **quitamos su declaración y en** `interr.c` **ya no hace falta declararlas como** `extern`.
-  - **Llamar a la función** `port_led_timer_setup()` en el `main()` para inicializar el *timer* 2.
+| Parameter     | Value           |
+| ------------- | --------------- |
+| Pin           | PA5             |
+| Mode          | Output          |
+| Pull up/ down | No push no pull |
+
+The LED blinks with an interrupt interval of 500 ms and uses the TIM2 to generate the interrupt. The interrupt is configured with the following settings:
+
+| Parameter   | Value             |
+| ----------- | ----------------- |
+| Interrupt   | TIM2_IRQHandler() |
+| Interval    | 500 ms            |
+| Priority    | 2                 |
+| Subpriority | 0                 |
 
 ## References
 
