@@ -1,6 +1,10 @@
 # Alarm system
 
-This project implements an alarm system with a PIR, a button and a LED. The system uses an FSM to manage the different states of the system and hardware. This picture shows the FSM of the system:
+This project implements an alarm system with a PIR, a button and a LED. The HW configuration is shown in the following picture:
+
+![HW Alarm](docs/assets/imgs/fsm_alarm_bb.png)
+
+The system uses an FSM to manage the different states of the system and hardware. This picture shows the FSM of the system:
 
 ![FSM Alarm](docs/assets/imgs/fsm_alarm.png)
 
