@@ -46,11 +46,12 @@ The button is connected to the pin `PC13`. The button is configured as an input 
 
 The LED is connected to the pin `PA5`. The LED is configured as an output with no push-pull resistor. The LED is used to indicate the state of the system. The LED is configured with the following settings:
 
-| Parameter     | Value           |
-| ------------- | --------------- |
-| Pin           | PA5             |
-| Mode          | Output          |
-| Pull up/ down | No push no pull |
+| Parameter     | Value               |
+| ------------- | ------------------- |
+| Variable name | led_home_alarm      |
+| Pin           | PA5 (LD2 on Nucleo) |
+| Mode          | Output              |
+| Pull up/ down | No push no pull     |
 
 The LED blinks with an interrupt interval of 500 ms and uses the TIM2 to generate the interrupt. The interrupt is configured with the following settings:
 
