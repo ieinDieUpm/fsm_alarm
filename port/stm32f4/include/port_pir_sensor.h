@@ -45,6 +45,14 @@ extern port_pir_hw_t pir_sensor_home_alarm; /*!< PIR sensor of the alarm system.
 bool port_pir_sensor_get_status(port_pir_hw_t *pir_sensor);
 
 /**
+ * @brief Sets the status of the PIR sensor.
+ *
+ * @param pir_sensor Pointer to the PIR sensor structure.
+ * @param status New status of the PIR sensor.
+ */
+void port_pir_sensor_set_status(port_pir_hw_t *pir_sensor, bool status);
+
+/**
  * @brief Initializes the PIR sensor.
  *
  * @param pir_sensor Pointer to the PIR sensor structure.

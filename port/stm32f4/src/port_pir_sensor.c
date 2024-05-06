@@ -24,6 +24,11 @@ bool port_pir_sensor_get_status(port_pir_hw_t* p_pir)
     return p_pir->sensor_status;
 }
 
+void port_pir_sensor_set_status(port_pir_hw_t* p_pir, bool status)
+{
+    p_pir->sensor_status = status;
+}
+
 bool port_pir_sensor_read_gpio(port_pir_hw_t *p_pir)
 {    
     return (p_pir->p_port->IDR & BIT_POS_TO_MASK(p_pir->pin));

@@ -62,11 +62,11 @@ void EXTI15_10_IRQHandler(void)
   {
     if (port_pir_sensor_read_gpio(&pir_sensor_home_alarm))
     {
-      pir_sensor_home_alarm.sensor_status = true;
+      port_pir_sensor_set_status(&pir_sensor_home_alarm, true);
     }
     else
     {
-      pir_sensor_home_alarm.sensor_status = false;
+      port_pir_sensor_set_status(&pir_sensor_home_alarm, false);
     }
 
     EXTI->PR |= BIT_POS_TO_MASK(pir_sensor_home_alarm.pin);
