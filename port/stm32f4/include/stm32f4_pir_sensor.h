@@ -17,7 +17,7 @@
 
 /* Defines and macros --------------------------------------------------------*/
 // HW Nucleo-STM32F446RE:
-#define STM32F4_PIR_SENSOR_HOME_ALARM_GPIO_PORT GPIOA /*!< GPIO port of the PIR sensor in the Nucleo board */
+#define STM32F4_PIR_SENSOR_HOME_ALARM_GPIO_PORT GPIOB /*!< GPIO port of the PIR sensor in the Nucleo board */
 #define STM32F4_PIR_SENSOR_HOME_ALARM_GPIO_PIN GPIO_PIN_10     /*!< GPIO pin of the PIR sensor in the Nucleo board */
 #define STM32F4_PIR_SENSOR_HOME_ALARM_EXTI_IRQn EXTI15_10_IRQn /*!< EXTI IRQn of the PIR sensor in the Nucleo board */
 #define STM32F4_PIR_SENSOR_HOME_ALARM_IRQ_PRIO 1               /*!< IRQ priority of the PIR sensor in the Nucleo board */

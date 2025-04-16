@@ -80,7 +80,7 @@ void port_pir_sensor_gpio_setup(uint32_t pir_sensor_id)
     if (pir_sensor_id == PORT_PIR_SENSOR_HOME_ALARM_ID)
     {
         /* Enable the GPIO Clock */
-        __HAL_RCC_GPIOA_CLK_ENABLE();
+        __HAL_RCC_GPIOB_CLK_ENABLE();
 
         // Initialize the PIR sensor structure
         pir_sensor.Pin = STM32F4_PIR_SENSOR_HOME_ALARM_GPIO_PIN;

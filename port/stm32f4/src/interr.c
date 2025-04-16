@@ -48,6 +48,14 @@ void EXTI15_10_IRQHandler(void)
   {
     HAL_GPIO_EXTI_IRQHandler(STM32F4_BUTTON_HOME_ALARM_GPIO_PIN);
   }
+  else if (__HAL_GPIO_EXTI_GET_IT(STM32F4_PIR_SENSOR_HOME_ALARM_GPIO_PIN))
+  {
+    HAL_GPIO_EXTI_IRQHandler(STM32F4_PIR_SENSOR_HOME_ALARM_GPIO_PIN);
+  }
+  else
+  {
+    // Handle other EXTI lines if needed
+  }
 }
 
 /**

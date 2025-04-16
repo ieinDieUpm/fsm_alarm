@@ -88,7 +88,7 @@ void port_led_timer_delay_ms(uint32_t led_id, uint32_t delay_ms)
         HAL_TIM_GenerateEvent(&handler_tim_led_home_alarm, TIM_EVENTSOURCE_UPDATE); // 6) Update generation: Re-inicializa el contador y actualiza los registros. IMPORTANTE que esté lo último
 
         // Enable the timer
-        HAL_TIM_Base_Start_IT(&handler_tim_led_home_alarm);
+        //HAL_TIM_Base_Start_IT(&handler_tim_led_home_alarm);
     }
 }
 

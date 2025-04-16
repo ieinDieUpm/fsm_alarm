@@ -17,7 +17,7 @@ The PIR sensor is connected to the pin `PA10`. The sensor is configured as an in
 | Parameter     | Value                    |
 | ------------- | ------------------------ |
 | Variable name | pir_sensor_home_alarm    |
-| Pin           | PA10 (D2 on Nucleo)      |
+| Pin           | PB10 (D6 on Nucleo)      |
 | Mode          | Input                    |
 | Pull up/ down | No push no pull          |
 | Edge          | Both: Rising and Falling |
