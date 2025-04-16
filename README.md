@@ -12,7 +12,7 @@ You can generate as many alarm system as you want by creating a new FSM and assi
 
 ## PIR sensor
 
-The PIR sensor is connected to the pin `PA10`. The sensor is configured as an input with no push-pull resistor. The sensor generates an interrupt when it detects movement. The interrupt is configured with the following settings:
+The PIR sensor is connected to the pin `PB10`. The sensor is configured as an input with no push-pull resistor. The sensor generates an interrupt when it detects movement. The interrupt is configured with the following settings:
 
 | Parameter     | Value                    |
 | ------------- | ------------------------ |
